@@ -1,0 +1,7 @@
+*.c
+*.h
+*.COB
+*.i
+*.o
+UPDATEDB
+!Makefile

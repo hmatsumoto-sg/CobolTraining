@@ -1,0 +1,13 @@
+FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+     && apt-get -y install --no-install-recommends postgresql-client language-pack-ja
+
+WORKDIR /tmp
+COPY envbuilder ./envbuilder
+
+RUN bash envbuilder/builder/build.sh
+
+RUN rm -rf envbuilder

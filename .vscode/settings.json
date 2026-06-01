@@ -1,0 +1,26 @@
+{
+    "files.encoding": "shiftjis",
+    "files.candidateGuessEncodings": ["shiftjis", "utf8"],
+    "files.autoGuessEncoding": true,
+    "workbench.editor.showTabs": "multiple",
+    "coboleditor.format_constants_to_uppercase": true,
+    "coboleditor.intellisense_style": "uppercase",
+    "coboleditor.copybookexts": [
+        "cpy",
+        "CPY",
+        "cbl",
+        "CBL",
+        "inc",
+        "INC",
+        "COB",
+        "cob"
+    ],
+    "coboleditor.copybookdirs": [
+        "$COBCPY",
+        "$COPYPATH",
+        "copylib"
+    ],
+    "editor.fontFamily": "\"UDEV Gothic NF\", \"MS Gothic\"",
+    "editor.fontSize": 16,
+    "terminal.integrated.fontSize": 16
+}
