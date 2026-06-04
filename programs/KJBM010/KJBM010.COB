@@ -30,13 +30,24 @@
            
        WORKING-STORAGE SECTION.
        01  WK-EOF              PIC X(1)    VALUE "N".
-       01  WK-CNT              PIC 9(2)    VALUE ZERO.
+       01  WK-CNT              PIC 9(3)    VALUE ZERO.
 
 
        PROCEDURE DIVISION.
+      ******************************************************************
+      * メイン処理
+      ******************************************************************
+           PERFORM INIT-RTN .
+           PERFORM MAIN-RTN UNTIL WK-EOF = "Y".
+           PERFORM TERM-RTN .
+           STOP RUN.
+           
 
        INIT-RTN SECTION.
-           DISPLAY "*** KJBM010 START ***"
+      ******************************************************************
+      * 初期処理：開始メッセージ表示、ファイルの読み込み・中身チェック
+      ******************************************************************
+           DISPLAY "*** KJBM010 START ***".
       *ファイルの読み込み
            OPEN INPUT ITF-FILE.
            OPEN OUTPUT OTF-FILE.
@@ -50,40 +61,42 @@
            EXIT.
        
        MAIN-RTN SECTION.
-      *転送処理
-           PERFORM UNTIL WK-EOF = "Y"
+      ******************************************************************
+      * 転送処理：レコードのクリア、出力ファイルへの転記
+      ******************************************************************
       *レコードのクリア
-               MOVE " " TO OTF-REC
+           MOVE " " TO OTF-REC
                
-               MOVE ZERO TO JF020-JUCHU-Y1
-               MOVE ZERO TO JF020-TANKA
-               MOVE ZERO TO JF020-KINGAKU
-               MOVE JF010-DATA-KBN TO JF020-DATA-KBN
-               MOVE JF010-JUCHU-NO-X TO JF020-JUCHU-NO-X
-               MOVE JF010-JUCHU-DATE TO JF020-JUCHU-DATE6
-               MOVE JF010-SHOHIN-NO TO JF020-SHOHIN-NO-X
-               MOVE JF010-SURYO-X TO JF020-SURYO-X
-               WRITE  OTF-REC
-               ADD 1 TO WK-CNT
-               READ ITF-FILE
-                   AT END MOVE "Y" TO WK-EOF
-               END-READ
-           END-PERFORM.
+           MOVE ZERO TO JF020-JUCHU-Y1
+           MOVE ZERO TO JF020-TANKA
+           MOVE ZERO TO JF020-KINGAKU
+           MOVE JF010-DATA-KBN TO JF020-DATA-KBN
+           MOVE JF010-JUCHU-NO-X TO JF020-JUCHU-NO-X
+           MOVE JF010-JUCHU-DATE TO JF020-JUCHU-DATE6
+           MOVE JF010-SHOHIN-NO TO JF020-SHOHIN-NO-X
+           MOVE JF010-SURYO-X TO JF020-SURYO-X
+           WRITE  OTF-REC
+           ADD 1 TO WK-CNT
+           READ ITF-FILE
+             AT END MOVE "Y" TO WK-EOF
+           END-READ.
        EXT.
            EXIT.
 
        TERM-RTN SECTION.
+      ******************************************************************
+      * 終了処理：ファイルを閉じる、メッセージ表示、通常処理
+      ******************************************************************
       *開いたファイルを閉じる 
            CLOSE ITF-FILE.
            CLOSE OTF-FILE.
            
-           DISPLAY "***KJBM010 ITF: <" WK-CNT ">".
-           DISPLAY "*** KJBM010 END ***".
+           DISPLAY " *** KJBM010 ITF: " WK-CNT.
+           DISPLAY " *** KJBM010 OTF: " WK-CNT.
 
-           STOP RUN.
+           DISPLAY "*** KJBM010 END ***".
        EXT.
            EXIT.
-
 
 
 
