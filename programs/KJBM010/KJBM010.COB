@@ -30,7 +30,8 @@
            
        WORKING-STORAGE SECTION.
        01  WK-EOF              PIC X(1)    VALUE "N".
-       01  WK-CNT              PIC 9(3)    VALUE ZERO.
+       01  WK-IN-CNT              PIC 9(3)    VALUE ZERO.
+       01  WK-OUT-CNT              PIC 9(3)    VALUE ZERO.
 
 
        PROCEDURE DIVISION.
@@ -65,9 +66,11 @@
       * 転送処理：レコードのクリア、出力ファイルへの転記
       ******************************************************************
       *レコードのクリア
-           MOVE " " TO OTF-REC
+           MOVE SPACE TO OTF-REC
                
            MOVE ZERO TO JF020-JUCHU-Y1
+           MOVE SPACE TO JF020-ERR-KBN-TBL
+           MOVE SPACE TO JF020-SHOHIN-MEI
            MOVE ZERO TO JF020-TANKA
            MOVE ZERO TO JF020-KINGAKU
            MOVE JF010-DATA-KBN TO JF020-DATA-KBN
@@ -76,9 +79,13 @@
            MOVE JF010-SHOHIN-NO TO JF020-SHOHIN-NO-X
            MOVE JF010-SURYO-X TO JF020-SURYO-X
            WRITE  OTF-REC
-           ADD 1 TO WK-CNT
+           ADD 1 TO WK-IN-CNT
            READ ITF-FILE
-             AT END MOVE "Y" TO WK-EOF
+             AT END
+               ADD 1 TO WK-OUT-CNT 
+               MOVE "Y" TO WK-EOF
+             NOT AT END 
+               ADD 1 TO WK-OUT-CNT
            END-READ.
        EXT.
            EXIT.
@@ -91,8 +98,8 @@
            CLOSE ITF-FILE.
            CLOSE OTF-FILE.
            
-           DISPLAY " *** KJBM010 ITF: " WK-CNT.
-           DISPLAY " *** KJBM010 OTF: " WK-CNT.
+           DISPLAY " *** KJBM010 ITF: " WK-IN-CNT.
+           DISPLAY " *** KJBM010 OTF: " WK-OUT-CNT.
 
            DISPLAY "*** KJBM010 END ***".
        EXT.
