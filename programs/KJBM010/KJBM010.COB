@@ -52,13 +52,9 @@
       *ファイルの読み込み
            OPEN INPUT ITF-FILE.
            OPEN OUTPUT OTF-FILE.
-       
-      *ファイルの中が空だったら処理をやめる
-           READ ITF-FILE
-               AT END
-                   MOVE "Y" TO WK-EOF
-               END-READ.
-       EXT.
+
+           PERFORM READ-RTN.
+       INIT-EXT.
            EXIT.
        
        MAIN-RTN SECTION.
@@ -78,17 +74,34 @@
            MOVE JF010-JUCHU-DATE TO JF020-JUCHU-DATE6
            MOVE JF010-SHOHIN-NO TO JF020-SHOHIN-NO-X
            MOVE JF010-SURYO-X TO JF020-SURYO-X
-           WRITE  OTF-REC
-           ADD 1 TO WK-IN-CNT
-           READ ITF-FILE
-             AT END
-               ADD 1 TO WK-OUT-CNT 
-               MOVE "Y" TO WK-EOF
-             NOT AT END 
-               ADD 1 TO WK-OUT-CNT
-           END-READ.
-       EXT.
+           PERFORM WRITE-RTN.
+           PERFORM READ-RTN.
+       MAIN-EXT.
            EXIT.
+                
+      ******************************************************************
+      * 読み込み処理：ファイルを読み込む
+      ******************************************************************
+       READ-RTN SECTION.
+      *ファイルの中が空だったら処理をやめる
+           READ ITF-FILE
+               AT END
+                   MOVE "Y" TO WK-EOF
+               NOT AT END 
+                   ADD 1 TO WK-IN-CNT
+               END-READ.
+       READ-EXT.
+           EXIT.
+
+      ******************************************************************
+      * 書き込み処理：ファイルに書き込む
+      ******************************************************************
+       WRITE-RTN SECTION.
+           WRITE  OTF-REC
+           ADD 1 TO WK-OUT-CNT.
+       WRITE-EXT.
+           EXIT.
+
 
        TERM-RTN SECTION.
       ******************************************************************
@@ -102,7 +115,7 @@
            DISPLAY " *** KJBM010 OTF: " WK-OUT-CNT.
 
            DISPLAY "*** KJBM010 END ***".
-       EXT.
+       TERM-EXT.
            EXIT.
 
 
