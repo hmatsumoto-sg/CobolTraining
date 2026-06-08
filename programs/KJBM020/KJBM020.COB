@@ -53,7 +53,7 @@
            OPEN  OUTPUT  OTF-FILE.
            
            PERFORM  READ-RTN.
-       INIT-EXT.
+       EXT.
            EXIT.
       ******************************************************************
       * 転送・確認処理：入力レコードの各項目を出力レコードに転送する
@@ -75,12 +75,12 @@
            END-CALL.
 
       *仕様書[チェック詳細]に基づく各項目のチェック
-           IF  NOT   (JF020-DATA-KBN  OF  OTF-REC = "1"  
+           IF  NOT  (JF020-DATA-KBN  OF  OTF-REC = "1"  
                        OR  JF020-DATA-KBN  OF  OTF-REC = "9")
                    MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (1)
            END-IF.
 
-           IF   JF020-JUCHU-NO  OF  OTF-REC IS NOT NUMERIC  
+           IF  JF020-JUCHU-NO  OF  OTF-REC IS NOT NUMERIC  
                        OR  JF020-JUCHU-NO  OF  OTF-REC = ZERO
                    MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (2)
            END-IF.
@@ -90,7 +90,7 @@
            ELSE    MOVE "1"  TO  JF020-ERR-KBN  OF  OTF-REC (3)
            END-IF.
 
-           IF   JF020-SHOHIN-NO  OF  OTF-REC IS NOT NUMERIC  
+           IF  JF020-SHOHIN-NO  OF  OTF-REC IS NOT NUMERIC  
                        OR  JF020-SHOHIN-NO  OF  OTF-REC = ZERO
                    MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (5)
            END-IF.
@@ -103,7 +103,7 @@
            
            PERFORM  WRITE-RTN.
            PERFORM  READ-RTN.
-       MAIN-EXT.
+       EXT.
            EXIT.
 
       ******************************************************************
@@ -115,7 +115,7 @@
            DISPLAY  "*** ITF = " WK-IN-CNT " ***".
            DISPLAY  "*** OTF = " WK-OUT-CNT " ***".
            DISPLAY  "*** KJBM020 END ***".
-       TERM-EXT.
+       EXT.
            EXIT.
 
       ******************************************************************
@@ -128,7 +128,7 @@
                NOT AT END 
                    ADD 1 TO WK-IN-CNT
            END-READ.
-       READ-EXT.
+       EXT.
            EXIT.
 
       ******************************************************************
@@ -137,5 +137,5 @@
        WRITE-RTN               SECTION.
            WRITE  OTF-REC
            ADD 1 TO WK-OUT-CNT.
-       WRITE-EXT.
+       EXT.
            EXIT.
