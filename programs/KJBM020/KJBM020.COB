@@ -33,7 +33,7 @@
        01  WK-EOF                       PIC X(1)    VALUE "N".
        01  WK-IN-CNT                    PIC 9(3)    VALUE ZERO.
        01  WK-OUT-CNT                   PIC 9(3)    VALUE ZERO.
-           COPY KCBS010P.
+       COPY KCBS010P.
 
        PROCEDURE               DIVISION.
       ******************************************************************
@@ -66,39 +66,37 @@
 
       *サブプログラムに値をセットする
            INITIALIZE  KCBS010-P1.
-           MOVE  ZERO  TO  S010-P1-Y1.
-           MOVE  JF020-JUCHU-DATE6  OF  OTF-REC  
-                       TO  S010-DATE6.
+           MOVE  JF020-JUCHU-DATE  OF  OTF-REC  TO  S010-DATE.
        
       *サブプログラムの呼び出し
-           CALL  "KCBS010"  USING  KCBS010-P1
-           END-CALL.
+           CALL  "KCBS010"  USING  KCBS010-P1.
 
       *仕様書[チェック詳細]に基づく各項目のチェック
            IF  NOT  (JF020-DATA-KBN  OF  OTF-REC = "1"  
                        OR  JF020-DATA-KBN  OF  OTF-REC = "9")
-                   MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (1)
+             MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (1)
            END-IF.
 
            IF  JF020-JUCHU-NO  OF  OTF-REC IS NOT NUMERIC  
                        OR  JF020-JUCHU-NO  OF  OTF-REC = ZERO
-                   MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (2)
+             MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (2)
            END-IF.
 
-           IF  S010-RCD = SPACE
-                   MOVE  S010-DATE8  TO  JF020-JUCHU-DATE  OF  OTF-REC
-           ELSE    MOVE "1"  TO  JF020-ERR-KBN  OF  OTF-REC (3)
+           IF  NOT  S010-RCD = "E"
+             MOVE  S010-DATE8  TO  JF020-JUCHU-DATE  OF  OTF-REC
+           ELSE    
+             MOVE "1"  TO  JF020-ERR-KBN  OF  OTF-REC (3)
            END-IF.
 
            IF  JF020-SHOHIN-NO  OF  OTF-REC IS NOT NUMERIC  
                        OR  JF020-SHOHIN-NO  OF  OTF-REC = ZERO
-                   MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (5)
+             MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (5)
            END-IF.
 
            IF  NOT  (JF020-SURYO  OF  OTF-REC IS NUMERIC
                        AND  JF020-SURYO  OF  OTF-REC >= 1 
                        AND  JF020-SURYO  OF  OTF-REC <= 999)
-                   MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (6)
+             MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (6)
            END-IF.
            
            PERFORM  WRITE-RTN.
