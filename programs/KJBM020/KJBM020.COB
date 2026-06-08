@@ -33,7 +33,7 @@
        01  WK-EOF                       PIC X(1)    VALUE "N".
        01  WK-IN-CNT                    PIC 9(3)    VALUE ZERO.
        01  WK-OUT-CNT                   PIC 9(3)    VALUE ZERO.
-       COPY KCBS010P.
+           COPY KCBS010P.
 
        PROCEDURE               DIVISION.
       ******************************************************************
@@ -59,8 +59,6 @@
       * 転送・確認処理：入力レコードの各項目を出力レコードに転送する
       ******************************************************************
        MAIN-RTN                SECTION.
-      *レコード全体をスペースクリア
-           MOVE  SPACE  TO  OTF-REC.
       *項目すべてのデータをセット
            MOVE  ITF-REC  TO  OTF-REC.
       *入力ファイルのエラーテーブルに何か入っていた時の対策
@@ -89,7 +87,7 @@
 
            IF  S010-RCD = SPACE
                    MOVE  S010-DATE8  TO  JF020-JUCHU-DATE  OF  OTF-REC
-               ELSE  MOVE "1"  TO  JF020-ERR-KBN  OF  OTF-REC (3)
+           ELSE    MOVE "1"  TO  JF020-ERR-KBN  OF  OTF-REC (3)
            END-IF.
 
            IF   JF020-SHOHIN-NO  OF  OTF-REC IS NOT NUMERIC  
@@ -99,7 +97,7 @@
 
            IF  NOT  (JF020-SURYO  OF  OTF-REC IS NUMERIC
                        AND  JF020-SURYO  OF  OTF-REC >= 1 
-                           AND  JF020-SURYO  OF  OTF-REC <= 999)
+                       AND  JF020-SURYO  OF  OTF-REC <= 999)
                    MOVE  "1"  TO  JF020-ERR-KBN  OF  OTF-REC (6)
            END-IF.
            
@@ -123,20 +121,20 @@
       ******************************************************************
       * 入力処理：ファイルを読み込む、中身が空ならやめる
       ******************************************************************
-       READ-RTN               SECTION.
+       READ-RTN                SECTION.
            READ  ITF-FILE
                AT END
                    MOVE "Y" TO WK-EOF
                NOT AT END 
                    ADD 1 TO WK-IN-CNT
-               END-READ.
+           END-READ.
        READ-EXT.
            EXIT.
 
       ******************************************************************
       * 出力処理：ファイルに書き込む
       ******************************************************************
-       WRITE-RTN              SECTION.
+       WRITE-RTN               SECTION.
            WRITE  OTF-REC
            ADD 1 TO WK-OUT-CNT.
        WRITE-EXT.
