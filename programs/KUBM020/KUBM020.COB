@@ -33,7 +33,7 @@
        01  WK-EOF                       PIC X(1)    VALUE "N".
        01  WK-IN-CNT                    PIC 9(3)    VALUE ZERO.
        01  WK-OUT-CNT                   PIC 9(3)    VALUE ZERO.
-       01  WK-GOUKEI-KINGAKU            PIC 9(12)   VALUE ZERO.
+       01  WK-GOUKEI-KINGAKU            PIC S9(12)   VALUE ZERO.
        01  WK-HOLD-KEY                              VALUE LOW-VALUES.
            03  WK-HOLD-SHOHIN-NO        PIC 9(5).
            03  WK-HOLD-JUCHU-YM.
@@ -69,19 +69,19 @@
       * 集計処理：商品番号と受注年月が合うものの金額を足す
       ******************************************************************
        MAIN-RTN                SECTION.
-      *出力ファイルの全項目をスペースクリア
-           MOVE  SPACE  TO  OTF-REC.
       *カレントキーに現在の数値を転記
-           MOVE UF010-SHOHIN-NO OF ITF-REC TO WK-CUR-SHOHIN-NO.
-           MOVE UF010-JUCHU-YY  OF ITF-REC TO WK-CUR-JUCHU-Y.
-           MOVE UF010-JUCHU-MM  OF ITF-REC TO WK-CUR-JUCHU-M.
+           MOVE UF010-SHOHIN-NO TO WK-CUR-SHOHIN-NO.
+           MOVE UF010-JUCHU-YY  TO WK-CUR-JUCHU-Y.
+           MOVE UF010-JUCHU-MM  TO WK-CUR-JUCHU-M.
 
       *キーがあっているかの判別
            IF  WK-CUR-KEY  NOT = WK-HOLD-KEY
+      *出力ファイルの全項目をスペースクリア
+               MOVE  SPACE  TO  OTF-REC
       *前のグループの内容を編集して出力
-               MOVE WK-HOLD-SHOHIN-NO  TO UF020-SHOHIN-NO   OF OTF-REC
-               MOVE WK-HOLD-JUCHU-YM   TO UF020-JUCHU-DATE  OF OTF-REC
-               MOVE WK-GOUKEI-KINGAKU  TO UF020-KINGAKU     OF OTF-REC
+               MOVE WK-HOLD-SHOHIN-NO  TO UF020-SHOHIN-NO   
+               MOVE WK-HOLD-JUCHU-YM   TO UF020-JUCHU-DATE  
+               MOVE WK-GOUKEI-KINGAKU  TO UF020-KINGAKU     
                PERFORM  WRITE-RTN             
       *合計エリアのクリア
                MOVE  ZERO  TO  WK-GOUKEI-KINGAKU
@@ -92,10 +92,9 @@
       *読み込んでいるレコードの加算/減算
            EVALUATE  UF010-DATA-KBN
              WHEN "1"
-               ADD  UF010-KINGAKU  OF  ITF-REC  TO  WK-GOUKEI-KINGAKU
+               ADD  UF010-KINGAKU  TO  WK-GOUKEI-KINGAKU
              WHEN "9"
-               SUBTRACT  UF010-KINGAKU  OF  ITF-REC  
-                                              FROM  WK-GOUKEI-KINGAKU
+               SUBTRACT  UF010-KINGAKU  FROM  WK-GOUKEI-KINGAKU
            END-EVALUATE.
            
            PERFORM  READ-RTN.
@@ -109,9 +108,9 @@
       *最後のグループの内容を編集して出力
            IF  WK-IN-CNT > 0
              MOVE  SPACE  TO  OTF-REC
-             MOVE WK-HOLD-SHOHIN-NO TO UF020-SHOHIN-NO   OF OTF-REC
-             MOVE WK-HOLD-JUCHU-YM  TO UF020-JUCHU-DATE  OF OTF-REC
-             MOVE WK-GOUKEI-KINGAKU TO UF020-KINGAKU     OF OTF-REC
+             MOVE WK-HOLD-SHOHIN-NO TO UF020-SHOHIN-NO 
+             MOVE WK-HOLD-JUCHU-YM  TO UF020-JUCHU-DATE 
+             MOVE WK-GOUKEI-KINGAKU TO UF020-KINGAKU 
              PERFORM  WRITE-RTN        
            END-IF.
 
@@ -129,12 +128,12 @@
        READ-RTN                SECTION.  
            READ  ITF-FILE
                AT END
-                   MOVE "Y" TO WK-EOF
+                 MOVE "Y" TO WK-EOF
                NOT AT END 
-               IF  WK-HOLD-KEY = LOW-VALUES
-                 MOVE UF010-SHOHIN-NO OF ITF-REC TO WK-HOLD-SHOHIN-NO
-                 MOVE UF010-JUCHU-YY  OF ITF-REC TO WK-HOLD-JUCHU-Y
-                 MOVE UF010-JUCHU-MM  OF ITF-REC TO WK-HOLD-JUCHU-M
+                 IF  WK-HOLD-KEY = LOW-VALUES
+                   MOVE UF010-SHOHIN-NO TO WK-HOLD-SHOHIN-NO
+                   MOVE UF010-JUCHU-YY  TO WK-HOLD-JUCHU-Y
+                   MOVE UF010-JUCHU-MM  TO WK-HOLD-JUCHU-M
                END-IF
                ADD 1 TO WK-IN-CNT
            END-READ.
