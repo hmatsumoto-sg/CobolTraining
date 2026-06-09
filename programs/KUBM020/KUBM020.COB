@@ -108,7 +108,7 @@
        TERM-RTN                SECTION.
       *最後のグループの内容を編集して出力
            IF  WK-IN-CNT > 0
-             MOVE  SPACE  TO  OTF-REC.
+             MOVE  SPACE  TO  OTF-REC
              MOVE WK-HOLD-SHOHIN-NO TO UF020-SHOHIN-NO   OF OTF-REC
              MOVE WK-HOLD-JUCHU-YM  TO UF020-JUCHU-DATE  OF OTF-REC
              MOVE WK-GOUKEI-KINGAKU TO UF020-KINGAKU     OF OTF-REC
