@@ -61,10 +61,7 @@
            EXEC SQL CONNECT TO :DB-NAME END-EXEC.
       *接続に失敗したらエラーメッセージを出す
            IF SQLCODE NOT = 0
-             DISPLAY "DB CONNECT ERROR: " SQLCODE
-             DISPLAY "ERROR MESSAGE: " SQLERRMC
-             MOVE 9 TO RETURN-CODE
-             STOP RUN
+             PERFORM  ABEND-RTN
            END-IF.
       *出力ファイルを開く
            OPEN OUTPUT OTF-FILE.      
@@ -76,7 +73,7 @@
        MAIN-RTN                   SECTION.
       *カーソル宣言
            EXEC SQL
-             DECLARE  CUR-SHOHIN CURSOR FOR
+             DECLARE  CUR-JUCHU CURSOR FOR
              SELECT   CMJUCHU_DATA_KBN, CMJUCHU_JUCHU_NO, 
                       CMJUCHU_JUCHU_DATE, CMJUCHU_SHOHIN_NO,
                       CMJUCHU_SURYO
@@ -84,10 +81,11 @@
              ORDER BY CMJUCHU_JUCHU_NO
            END-EXEC.
       *カーソルOPEN
-           EXEC SQL OPEN CUR-SHOHIN END-EXEC.
+           EXEC SQL OPEN CUR-JUCHU END-EXEC.
            IF SQLCODE NOT = 0
              DISPLAY "CURSOR OPEN ERROR: "
-             PERFORM ABN-RTN
+             PERFORM ABCLOSE-RTN
+             PERFORM ABEND-RTN
            END-IF.
 
       *FETCHのループ処理で全行取得
@@ -126,22 +124,22 @@
            IF SQLCODE = 100
              MOVE 'Y' TO FLG-FETCH-END
            ELSE IF SQLCODE NOT = 0
-             PERFORM ABN-RTN
-           END-IF.
-
-           IF SQLCODE = 0
-               MOVE  SPACE              TO  OTF-REC
-               MOVE  CMJUCHU-DATA-KBN   TO  JF020-DATA-KBN
-               MOVE  CMJUCHU-JUCHU-NO   TO  JF020-JUCHU-NO-X
-               MOVE  ZERO               TO  JF020-JUCHU-Y1
-               MOVE  CMJUCHU-JUCHU-DATE TO  JF020-JUCHU-DATE6
-               MOVE  CMJUCHU-SHOHIN-NO  TO  JF020-SHOHIN-NO-X
-               MOVE  CMJUCHU-SURYO      TO  JF020-SURYO-X
-               MOVE  SPACE              TO  JF020-ERR-KBN-TBL
-               MOVE  SPACE              TO  JF020-SHOHIN-MEI
-               MOVE  ZERO               TO  JF020-TANKA
-               MOVE  ZERO               TO  JF020-KINGAKU
-               PERFORM  WRITE-RTN
+             PERFORM ABCLOSE-RTN
+             PERFORM ABEND-RTN
+           ELSE
+           SQLCODE = 0
+             MOVE  SPACE              TO  OTF-REC
+             MOVE  CMJUCHU-DATA-KBN   TO  JF020-DATA-KBN
+             MOVE  CMJUCHU-JUCHU-NO   TO  JF020-JUCHU-NO-X
+             MOVE  ZERO               TO  JF020-JUCHU-Y1
+             MOVE  CMJUCHU-JUCHU-DATE TO  JF020-JUCHU-DATE6
+             MOVE  CMJUCHU-SHOHIN-NO  TO  JF020-SHOHIN-NO-X
+             MOVE  CMJUCHU-SURYO      TO  JF020-SURYO-X
+             MOVE  SPACE              TO  JF020-ERR-KBN-TBL
+             MOVE  SPACE              TO  JF020-SHOHIN-MEI
+             MOVE  ZERO               TO  JF020-TANKA
+             MOVE  ZERO               TO  JF020-KINGAKU
+             PERFORM  WRITE-RTN
            END-IF.
        EXT.
            EXIT.
@@ -155,19 +153,21 @@
        EXT.
            EXIT.
       ******************************************************************
-      * 強制終了処理：エラー出力、ロールバック
+      * 強制終了処理：エラー出力
       ******************************************************************
-       ABN-RTN                    SECTION.
+       ABEND-RTN                    SECTION.
            DISPLAY "SQLCODE: " SQLCODE.
            DISPLAY "SQLERRMC: " SQLERRMC.
-           EXEC SQL ROLLBACK END-EXEC.
-           EXEC SQL DISCONNECT ALL END-EXEC.
            MOVE 9 TO RETURN-CODE.
            STOP RUN. 
        EXT.
            EXIT.
-
-
-
-
-
+       
+      ******************************************************************
+      * 強制切断処理：ロールバック、サーバー切断
+      ******************************************************************
+       ABCLOSE-RTN                   SECTION.
+           EXEC SQL ROLLBACK END-EXEC.
+           EXEC SQL DISCONNECT ALL END-EXEC.
+       EXT.
+           EXIT.
