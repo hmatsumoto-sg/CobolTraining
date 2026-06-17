@@ -14,7 +14,6 @@
        DATA                    DIVISION.
        WORKING-STORAGE         SECTION.
        01  WK-MAX-DATE                PIC 9(2)    VALUE ZERO.
-       01  WK-SET-YEAR-TOP            PIC 9(2)    VALUE ZERO.
        01  WK-LEAP-FLG                PIC X(1)    VALUE "N".
        01  WK-RESULT           PIC 9(3)    VALUE ZERO.
        01  WK-REMAINDER400            PIC 9(3)    VALUE ZERO.
@@ -95,11 +94,10 @@
                WHEN  OTHER
                  MOVE  "N"  TO  WK-LEAP-FLG
              END-EVALUATE
-           END-IF.
       *Ç§ÇÈÇ§îNÇ∂Ç·Ç»Ç¢ÇÃÇ…29ÇæÇ∆ÉGÉâÅ[   
-           IF  (S010-D6-MM = 2) AND (S010-D6-DD = 29)
-                                AND (WK-LEAP-FLG = "N")
-             MOVE  "E"  TO  S010-RCD
+             IF  (S010-D6-DD = 29) AND (WK-LEAP-FLG = "N")
+               MOVE  "E"  TO  S010-RCD
+             END-IF
            END-IF.
        EXT.
            EXIT.
